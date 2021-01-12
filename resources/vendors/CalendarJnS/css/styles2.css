@@ -1,0 +1,192 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: linear-gradient(to right, mediumpurple, lightsalmon);
+}
+
+.title {
+  text-align: center;
+  color: #444;
+}
+
+.calendar {
+  width: 95%;
+  margin: 1em auto;
+  padding: 0.5em 0.5em;
+  /*===============================
+               MODAL   
+  ================================*/
+  /*==============================
+            TAB CALENDAR
+  ================================*/
+  /*==============================
+            TAB CALENDAR
+  ================================*/
+}
+.calendar__info {
+  display: flex;
+  align-items: center;
+  padding: 0 2em;
+  font-size: 1.2em;
+  text-transform: uppercase;
+  -webkit-text-size-adjust: 30fr;
+          text-size-adjust: 30fr;
+}
+.calendar__info .date-info {
+  display: flex;
+  width: 25%;
+}
+.calendar .date-change {
+  margin-left: auto;
+}
+.calendar .day-week, .calendar__date {
+  line-height: 30px !important;
+  padding: 2px !important;
+  text-align: center;
+}
+.calendar__prev {
+  margin-right: auto;
+}
+.calendar__next {
+  margin-left: auto;
+}
+.calendar .week, .calendar__date {
+  line-height: 40px;
+  padding: 2px;
+}
+.calendar__date {
+  cursor: cell;
+}
+.calendar__date:hover {
+  background-color: #0003 !important;
+}
+.calendar__date:focus {
+  background-color: rgba(13, 189, 189, 0.2) !important;
+}
+.calendar__month, .calendar__year {
+  padding: 0.5em 0.3em;
+  font-weight: 800;
+}
+.calendar__item {
+  text-align: center;
+  line-height: 2;
+}
+.calendar__today {
+  background: #e90606;
+  color: white;
+  margin: auto;
+}
+.calendar__last-days {
+  opacity: 0.4;
+}
+.calendar #rooms td {
+  line-height: 5px;
+  text-align: center;
+}
+.calendar #rooms .typeRoom {
+  background: linear-gradient(to right, #333, #555);
+  color: #fff;
+  text-transform: uppercase;
+  font-weight: 800;
+  font-style: italic;
+  font-size: 1.4rem;
+  padding: 10px;
+  border-top: 1px solid #333;
+  border-bottom: 1px solid #333;
+}
+.calendar #rooms .nameRoom {
+  background: #eaeaea;
+  border-top: 0.3px solid #cecece;
+  border: none;
+  border-top-color: currentcolor;
+  border-top-style: none;
+  border-top-width: medium;
+  border-top: 0.1px solid #c8bebe;
+  font-weight: 500;
+}
+.calendar #rooms .active {
+  background-color: #30bdbd;
+  border: none;
+}
+.calendar #rooms .index {
+  background-color: #217e7e;
+  border: none;
+}
+.calendar #rooms .EventsCalendar {
+  border: none;
+  color: white;
+}
+.calendar #rooms .EventsCalendar:hover {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+  cursor: pointer;
+}
+.calendar #rooms .EventsCalendar.paid {
+  background: linear-gradient(to right, #1a9316, #18b740);
+}
+.calendar #rooms .EventsCalendar.unpaid {
+  background: #f00612;
+}
+.calendar #rooms .EventsCalendar.hold {
+  background: #ffc107;
+}
+.calendar .modal-title {
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.calendar .modal-header {
+  cursor: move;
+}
+.calendar .nav-tabs {
+  margin-right: 3px;
+}
+.calendar .nav-tabs .nav-item {
+  margin-right: 3px;
+}
+.calendar .nav-tabs .nav-link {
+  background: #3333338a;
+  color: #fff;
+}
+.calendar .nav-tabs .nav-link:hover {
+  border: none;
+}
+.calendar .nav-tabs a {
+  color: #fff;
+}
+.calendar .tab-content {
+  background: #fff;
+}
+.calendar .tab-content .tab-pane #headerClientDetails {
+  text-transform: uppercase;
+}
+.calendar .tab-content .tab-pane #ContentClientDetails {
+  background: linear-gradient(to top, #fff, #f2f2f2);
+}
+.calendar .tab-content .tab-pane #ContentClientDetails div:nth-child(1), .calendar .tab-content .tab-pane #ContentClientDetails div:nth-child(2) {
+  border-right: 1px dashed #aaa;
+}
+.calendar .tab-content .tab-pane p.note {
+  background-color: #17a2b8;
+  padding: 2px 5px;
+}
+.calendar .nav-tabs .nav-item.show .nav-link, .calendar .nav-tabs .nav-link.active {
+  color: #000;
+  background-color: #fff;
+  border: 1px solid #fff;
+}
+
+.ModalNight {
+  padding: 10px;
+  position: absolute;
+  background-color: #0062cc;
+  width: 8%;
+  height: 45px;
+  border-radius: 2rem 2rem 2rem 1px;
+}
+.ModalNight p {
+  color: #fff;
+  text-align: center;
+  font-size: 21px;
+  font-weight: 800;
+}
