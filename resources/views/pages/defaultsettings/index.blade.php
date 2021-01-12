@@ -116,7 +116,7 @@
                             <div class="input-field">
                                 <select    name="end_day_financial" value="{{old('end_day_financial',$defaultSetting['end_day_financial']??'')}}" required >
                                     @for ($i = 1; $i <= 31 ; $i++)
-                                        <option value="{{$i}}" {{$i == old('end_day_financial',$defaultSetting['end_day_financial']??'')? 'selected' : '' }}>{{$i}}</option>
+                                        <option value="{{$i == old('end_day_financial',$defaultSetting['end_day_financial']??'')? 'selected' : '' }}"></option>
                                     @endfor
 
                                 </select>
@@ -147,8 +147,8 @@
                         <div class="col s4">
                             <div class="input-field">
                                 <select    name="auto_convertion_rate" value="{{old('auto_convertion_rate',$defaultSetting['auto_convertion_rate']??'')}}" required >
-                                    <option value="0" {{0 == old('auto_convertion_rate',$defaultSetting['auto_convertion_rate']??'')? 'selected' : '' }}>Automatic</option>
-                                    <option value="1" {{1 == old('auto_convertion_rate',$defaultSetting['auto_convertion_rate']??'')? 'selected' : '' }}>Manual</option>
+            <option value="{{0 == old('auto_convertion_rate',$defaultSetting['auto_convertion_rate']??'')? 'selected' : '' }}">Automatic</option>
+                                    <option value="{{1 == old('auto_convertion_rate',$defaultSetting['auto_convertion_rate']??'')? 'selected' : '' }}">Manual</option>
                                 </select>
                                  <label for="auto_convertion_rate"><strong>Currency Conversion Rate</strong></label>
                                 @error('auto_convertion_rate')

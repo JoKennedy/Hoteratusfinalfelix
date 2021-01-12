@@ -11,6 +11,7 @@
     },
     "devDependencies": {
         "axios": "^0.19",
+        "bootstrap": "^4.0.0",
         "cross-env": "^5.1",
         "jquery": "^3.2",
         "laravel-mix": "^5.0.5",
@@ -18,14 +19,19 @@
         "popper.js": "^1.12",
         "resolve-url-loader": "^2.3.1",
         "rtlcss": "^2.4.1",
-        "sass": "^1.15.2",
-        "sass-loader": "^7.1.0",
-        "vue-template-compiler": "^2.6.12"
+        "sass": "^1.20.1",
+        "sass-loader": "^8.0.0",
+        "vue": "^2.5.17",
+        "vue-template-compiler": "^2.6.10"
     },
     "dependencies": {
         "artisan": "^0.1.2",
         "bootstrap-colorpicker": "^3.2.0",
         "gulp": "^4.0.2",
-        "jquery-colpick": "^3.1.0"
+        "jquery-colpick": "^3.1.0",
+        "jqueryui": "^1.11.1",
+        "js-datepicker": "^5.16.0",
+        "vuedraggable": "^2.24.3",
+        "yarn": "^1.22.10"
     }
 }

@@ -24,8 +24,8 @@ class DisplayColor extends Controller
         $roomStatus = RoomStatus::all();
         $housekeepingStatus = HousekeepingStatus::all();
         $alphabetCoding = AlphabetCoding::all();
-        $colorReserva = $roomStatus->where('id',1)->first()->hotel_room_status_color($hotel_id)->color??'';
-        return view('pages.displaycolor.index', compact('roomStatus', 'housekeepingStatus', 'alphabetCoding', 'hotel_id', 'colorReserva'));
+        //$colorReserva = $roomStatus->where('id',1)->first()->hotel_room_status_color($hotel_id)->color??'';
+        return view('pages.displaycolor.index', compact('roomStatus', 'housekeepingStatus', 'alphabetCoding', 'hotel_id'));
     }
 
     /**

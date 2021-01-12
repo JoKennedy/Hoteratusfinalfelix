@@ -29,7 +29,7 @@ class CreateRoomsTable extends Migration
                 ->nullable()
                 ->constrained();
             $table->text('description')->nullable();
-            $table->integer('sort_order')->dafault('0');
+            $table->integer('sort_order')->dafault(0);
             $table->integer('active')->default();
             $table->timestamps();
         });

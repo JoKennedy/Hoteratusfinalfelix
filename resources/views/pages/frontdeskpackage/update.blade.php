@@ -31,7 +31,7 @@
                 @csrf
                 @method('PUT')
                 <div class="row">
-                        <div class="col s12">
+                        <div class="col s12"> 
                             <ul class="tabs">
                             <li class="tab col"><a class="active"  href="#details">Package Properties</a></li>
                             <li class="tab col"><a href="#images">Images</a></li>
@@ -325,7 +325,11 @@
                                 @foreach ($hotel->cancellation_policies as $cancellation)
                                     <tr>
                                         <td class="first-row-check">
-                                            <input value="{{$cancellation->id}}" name="cancellation[]" class="cancellation" style="opacity: 1;  pointer-events: all;"  type="checkbox"  />
+                                            <input value="{{$cancellation->id}}" name="cancellation[]" class="cancellation" 
+                                            style="opacity: 1;  pointer-events: all;"  type="checkbox"  
+                                             
+                                            />
+                                          <!--Validar si existe Exists class-->
                                         </td>
                                         <td>{{$cancellation->name}}</td>
                                         <td>{{$cancellation->get_description($hotel->default_setting)}}</td>

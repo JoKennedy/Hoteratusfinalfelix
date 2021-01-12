@@ -38,7 +38,7 @@ $(document).ready(function () {
             'position': 'static',
         },
             function () {
-                //$(elementDragable).css({"position":"static"});
+                // $(elementDragable).css({"position":"static"});
                 //$(elementDragable).css({"top":"inherit"});
                 //$(elementDragable).css({"left":"inherit"});
                 let Id = $(elementDragable).attr("data-id");

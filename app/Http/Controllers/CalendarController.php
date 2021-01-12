@@ -22,16 +22,20 @@ class CalendarController extends Controller
         $salutations = Salutation::all();
         $housekeepingStatus = HousekeepingStatus::all();
         $roomStatus = RoomStatus::all();
-        $colorReserva = $roomStatus->where('id',1)->first()->hotel_room_status_color($hotel_id)->color??'';
-        return view('pages.calendar.index',compact('countries', 'salutations','roomStatus','housekeepingStatus','hotel_id'));
+        $roomTypeId = RoomType::all();
+        //$roomPrice = $roomTypeId->where('id', 1)->first()->room_types($hotel_id)->base_price??'';
+       // $colorReserva = $roomStatus->where('id',1)->first()->hotel_room_status_color($hotel_id)->color??'';
+        return view('pages.calendar.index',compact('countries', 'salutations','roomStatus','housekeepingStatus','hotel_id', 'roomTypeId', 'roomPrice'));
     }
+
+ 
 
     function housekeeping(Request $request){
       $hotel_id = $request->session()->get('hotel_id');
       $roomType = RoomType::where('hotel_id', '=',  $hotel_id )->where('active', '1')->orderBy('sort_order', 'asc')->get();
       $housekeepingStatus = HousekeepingStatus::all();
       $roomStatus = RoomStatus::all();
-      return view("pages.calendar.housekeeping",compact('hotel_id','roomType','roomStatus','housekeepingStatus'));
+      return view("pages.calendar.housekeeping",compact('hotel_id','roomType','roomStatus','housekeepingStatus', 'roomPrice'));
     }
     public function getInformation(Request $request ){
     

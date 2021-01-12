@@ -440,8 +440,7 @@
   </div>
 </div>
 @endsection
-
-{{-- vendor script --}}
+ {{-- vendor script --}}
 @section('vendor-script')
 <script src="{{asset('vendors/jquery-validation/jquery.validate.min.js')}}"></script>
 @endsection

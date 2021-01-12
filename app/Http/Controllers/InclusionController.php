@@ -38,7 +38,7 @@ class InclusionController extends Controller
                 ->make();
         } else {
 
-            return view('pages.inclusion.index', );
+            return view('pages.inclusion.index');
         }
     }
     /**

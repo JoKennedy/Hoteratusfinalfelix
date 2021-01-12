@@ -14,7 +14,7 @@ class AccountCodeController extends Controller
 
     public function store(Request $request)
     {
-        $hotel_id  = $request->session()->get('hotel_id'); 
+        $hotel_id  = $request->session()->get('hotel_id'); ;
         $valid = $request->validate([
             'name' => ['required', Rule::unique('account_codes')->where(function ($query) use ($request, $hotel_id) {
                 return $query->where('name', $request->name)->where('hotel_id' , $hotel_id);
@@ -29,16 +29,16 @@ class AccountCodeController extends Controller
             $deparment = PropertyDepartment::where('hotel_id', $hotel_id)->where('editable', 2)->first();
             $department_id = $deparment->id??0;
         }
-        $accountCode = AccountCode::create(['hotel_id' => $hotel_id, 'property_departments_id' => $department_id ] + $valid);
-        
+
+        $accountCode = AccountCode::create(['hotel_id' => $hotel_id, 'property_department_id' => $department_id ] + $valid);
+
         return response()->json($accountCode, 201);
-        
     }
 
     public function list(Request $request){
 
         $hotel_id  = $request->session()->get('hotel_id');
-        $accountCodes = AccountCode::where('hotel_id' ,$hotel_id)->where( 'property_departments_id' , $request->department_id)->get();
+        $accountCodes = AccountCode::where('hotel_id' ,$hotel_id)->where( 'property_department_id' , $request->department_id)->get();
 
         return response()->json(['data'=>$accountCodes, 'success' => true], 200);
     }

@@ -5,11 +5,174 @@
 @section('title','Calendar')
 
 {{-- page styles --}}
-
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
   integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
 <link rel="stylesheet" type="text/css" href="{{asset('vendors/CalendarJnS/css/bootstrap.min.css')}}">
 <link rel="stylesheet" type="text/css" href="{{asset('vendors/CalendarJnS/css/app-calendar.css')}}">
+
+{{-- page script --}}
+@section('page-script')
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script>
+  class Restaurant {
+    async loadProducts(ID) {
+        let data = {
+            "TO": "Restaurant",
+            "FOR": "loadProducts",
+            "ACTION": "view",
+            "id": ID
+        }
+        let datos = await GetInformation(data);
+    }
+    static holdProduct(ITEM) {
+        let idProduct = $(ITEM).attr("data-id");
+        let productName = $(ITEM).find(".name-product").text();
+        let priceProduct = $(ITEM).find(".price-product").attr("data-price");
+        let ifexist = $("#restaurant .products #table-products tbody").find(`tr[data-id='${idProduct}']`);
+        let quantity = "";
+        let total = 0;
+        let row =
+            `<tr data-id='${idProduct}'>
+                <td>${productName}</td>
+                <td>${idProduct}</td>
+                <td class="text-success font-weight-bold price" data-price='${priceProduct}'>$${priceProduct}</td>
+                <td class="d-flex">
+                    <input type="number" id="quantity" class="form-control w-75" value='1'>
+                    <button id="remove-product" class="btn btn-outline-primary btn-sm w-25" data-id='${idProduct}'><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>`;
+        if (ifexist.length != 0) {
+            quantity = parseInt($(ifexist).find("#quantity").val());
+            $(ifexist).find("#quantity").val(quantity + 1)
+        }
+        else {
+            $("#restaurant .products #table-products tbody").append(row);
+        }
+        $("#restaurant .products #table-products tbody tr").each(function () {
+            let price = parseFloat($(this).find('.price').attr("data-price"));
+            let quantityP = parseFloat($(this).find("#quantity").val());
+            total += price * quantityP;
+        });
+        total = parseToDecimal(total);
+        $("#restaurant .products #table-products tfoot #totalPrice span").text(total);
+    }
+    static onChangeAmount(){
+        
+        let discount = 0;
+        let subTotal = 0;
+        let total = 0;
+        $("#newOrder1 #tableTotalAmount tbody tr").each(function(){
+            var price = parseFloat($(this).find('#totalPrice input').val());
+            var quantityP = $(this).find("#quantity input").val();
+            var discount = parseFloat($(this).find("#discount").attr("data-discount"));
+            subTotal += price - discount;
+            total += price;
+        });
+        
+        console.log(total+"-"+subTotal);
+        $("#newOrder1 #tablePrices #subTotal span").text(subTotal);
+        $("#newOrder1 #tablePrices #amount span").text(total);
+        $("#newOrder1 #tablePrices #totalAmount span").text(total)
+    }
+}
+
+
+$(document).ready(function () {
+
+    $("#restaurant").on("click", ".category-product #products-category", function () {
+        new Restaurant().loadProducts($(this).attr("data-id"));
+    });
+    $("#restaurant").on("click", ".products .list-products .item-product", function () {
+        Restaurant.holdProduct(this);
+    });
+
+    //Operaciones
+    $("#restaurant #table-products tbody").on("click change keyup", "tr #quantity", function () {
+        let total = 0;
+        $("#restaurant .products #table-products tbody tr").each(function () {
+            let price = parseFloat($(this).find('.price').attr("data-price"));
+            let quantityP = parseFloat($(this).find("#quantity").val());
+            total += price * quantityP;
+        });
+        total = parseToDecimal(total);
+        $("#restaurant .products #table-products tfoot #totalPrice span").text(total);
+    });
+    $("#restaurant #table-products").on("click", "tr #remove-product", function () {
+        $(this).closest("tr").remove();
+        let total = 0;
+        $("#restaurant .products #table-products tbody tr").each(function () {
+            let price = parseFloat($(this).find('.price').attr("data-price"));
+            let quantityP = parseFloat($(this).find("#quantity").val());
+            total += price * quantityP;
+        });
+        total = parseToDecimal(total);
+        $("#restaurant .products #table-products tfoot #totalPrice span").text(total);
+    });
+
+    //Table Amount
+    //agregar el producto desde el BOX al table TotalAmount
+    $("#restaurant").on("click", ".dropdown-menu .list-group-item", function () {
+        let id = $(this).attr("data-id");
+        let nameProduct = $(this).find("#nameProduct").text();
+        let codeProduct = $(this).find("#codeProduct").text();
+        let priceProduct = $(this).find("#priceProduct").attr("data-price");
+        $(this).closest("tr").attr("data-id", id);
+        $(`#restaurant #newOrder1 #tableTotalAmount tfoot #dropdownNameProduct`).val(nameProduct);
+        $(`#restaurant #newOrder1 #tableTotalAmount tfoot #price span`).text(priceProduct);
+        $(`#restaurant #newOrder1 #tableTotalAmount tfoot #price`).attr("data-price", priceProduct);
+    });
+    
+    $("#restaurant #addNewProduct").on("click", "#add-product", function () {
+        let id = $("#restaurant #newOrder1 #tableTotalAmount tfoot #addNewProduct").attr("data-id");
+        let nameProduct = $(`#restaurant #newOrder1 #tableTotalAmount tfoot #dropdownNameProduct`).val();
+        let priceProduct = $(`#restaurant #newOrder1 #tableTotalAmount tfoot #price`).attr("data-price");
+        let quantity = $(`#restaurant #newOrder1 #tableTotalAmount tfoot #units input`).val();
+        let ifexist = $("#restaurant #newOrder1 #tableTotalAmount tbody").find(`tr[data-id='${id}']`);
+        let totalPrice = quantity * priceProduct;
+        parseToDecimal(totalPrice);
+        if (ifexist.length == 0) {
+            if (nameProduct.length > 0 && priceProduct.length > 0) {
+                row =
+                    `<tr data-id='${id}'>
+                        <td id="name">${nameProduct}</td>
+                        <td id="price" data-price='${priceProduct}'>$<span>${priceProduct}</span></td>
+                        <td id="quantity"><input type="number" class="form-control" value="${quantity}"></td>
+                        <td id="discount" class="cursor-pointer text-primary" data-discount="0.00">Discount</td>
+                        <td id="totalPrice" class="d-flex text-primary">$ <input type="text" class="border-0" value="${totalPrice}"></td>
+                        <td><button id="remove-product" class="btn btn-outline-primary"><i class="fas fa-trash"></i></button></td>
+                    </tr>`;
+                $("#restaurant #newOrder1 #tableTotalAmount tbody").append(row);
+
+                $(`#restaurant #newOrder1 #tableTotalAmount tfoot #dropdownNameProduct`).val("");
+                $(`#restaurant #newOrder1 #tableTotalAmount tfoot #price span`).text("--");
+                $(`#restaurant #newOrder1 #tableTotalAmount tfoot #units input`).val("");
+                $("#restaurant #newOrder1 #tableTotalAmount tfoot #addNewProduct").removeAttr("data-id");
+                Restaurant.onChangeAmount();
+            }
+        }
+        else{
+            $("#restaurant #newOrder1 #tableTotalAmount tfoot #alertProduct").animate({
+                display: "toggle",
+                opacity: "toggle",
+                display : "toggle"
+              }, 2000);
+        }
+    });
+    $("#restaurant #tableTotalAmount tbody").on("click change keyup", "tr #quantity", function () {
+        let total = 0;
+        $($(this).closest("tr")).each(function () {
+            let price = parseFloat($(this).find('#price').attr("data-price"));
+            let quantityP = parseFloat($(this).find("#quantity input").val());
+            total += price * quantityP;
+        });
+        total = parseToDecimal(total);
+        $(this).closest("tr").find("#totalPrice input").val(total);
+        Restaurant.onChangeAmount();
+        console.log(clientIdActive)
+    });
+});
+
+</script>
 
 {{-- page content --}}
 @section('content')
@@ -17,7 +180,7 @@
   <div class="row">
     @foreach ($roomStatus as $status)
         <div class="col">
-          <span class="badge p-2 w-100 text-white" style="background: {{$status->hotel_room_status_color($hotel_id)->color}}">{{$status->name}}</span>
+          <span class="badge p-2 w-100 text-white" style="">{{$status->name}}</span>
         </div>
     @endforeach
       </div>
@@ -83,7 +246,7 @@
       <div id="list-legends" class="collapse">
         <ul class="list">
           @foreach ($roomStatus as $status)
-          <li><span class="badge" style="background: {{$status->hotel_room_status_color($hotel_id)->color}}">&nbsp;&nbsp;&nbsp;</span> {{$status->name}}</li>
+          <li><span class="badge">&nbsp;&nbsp;&nbsp;</span> {{$status->name}}</li>
           @endforeach
         </ul>
       </div>
@@ -94,7 +257,8 @@
       <div id="list-housekeeping-legends" class="collapse">
         <ul class="list">
           @foreach($housekeepingStatus as $housekeeping)
-          <li><span class="badge" style="background:{{$housekeeping->hotel_housekeeping_status_color($hotel_id)->color}}">&nbsp;&nbsp;&nbsp;</span> {{$housekeeping->name}}</li>
+          <!-- modificacion hotel_room_status_color -->
+          <li><span class="badge" style="">&nbsp;&nbsp;&nbsp;</span> {{$housekeeping->name}}</li>
           @endforeach
         </ul>
       </div>
@@ -2692,16 +2856,16 @@
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" id="myTabCalendar" role="tablist">
       <li class="nav-item">
-        <a class="nav-link" id="frontDesk-tab" data-toggle="tab" href="#frontDesk" role="tab" aria-controls="frontDesk"
+        <a class="nav-link active" id="frontDesk-tab" data-toggle="tab" href="#frontDesk" role="tab" aria-controls="frontDesk"
           aria-selected="false">Front Desk</a>
       </li>
-      <li class="nav-item" data-remove="p21">
+    <!--   <li class="nav-item" data-remove="p21">
         <a class="nav-link active" id="p21-tab" data-id="p21" data-toggle="tab" href="#p21" role="tab"
           aria-controls="p21" aria-selected="true">Anastacia Grey <button type="button" data-id="p21" id="tabClose"
             class="close ml-1" aria-label="Close">
             <span aria-hidden="true">×</span>
           </button></a>
-      </li>
+      </li> -->
       <li class="nav-item" data-remove="groupReservation">
         <a class="nav-link" id="groupReservation-tab" data-id="groupReservation" data-toggle="tab" href="#groupReservation" role="tab"
           aria-controls="groupReservation" aria-selected="true">Group Reservation <button type="button" data-id="groupReservation"
@@ -2751,551 +2915,10 @@
         </div>
       </div>
       <!-- /Main Calendar -->
-      <div class="tab-pane active" id="p21" data-id="p21" role="tabpanel" aria-labelledby="p21-tab">
-        <div class="col-md-12 p-0">
-          <div class="row p-3" id="headerClientDetails">
-            <div class="col-md-3">
-              <label for="info">Room Type</label>
-              <select name="" id="" class="custom-select">
-                <option value=""></option>
-              </select>
-            </div>
-            <div class="col-md-5">
-              <label for="info">Room</label>
-              <div class="input-group">
-                <select name="" id="" class="custom-select"></select>
-                <div class="input-group-prepend">
-                  <div class="input-group-text">
-                    <div class="custom-control custom-checkbox">
-                      <input type="checkbox" class="custom-control-input" id="assingRoom">
-                      <label for="assingRoom" class="custom-control-label">Assign Rooms</label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-2" style="align-self: center;">
-              <span>Status: <b>RESERV</b></span>
-            </div>
-            <div class="col-md-2" style="align-self: center;">
-              <span>reserv#: <b>0001</b></span>
-            </div>
-          </div>
-          <div class="row" id="ContentClientDetails">
-            <!-- Column1 -->
-            <div class="col-md-6 pt-3">
-              <section id="personalInformation">
-                <table class="verticalTable w-100" id="guestInformation">
-                  <tbody>
-                    <tr>
-                      <th id="GguestID">Guest ID: <span>P20</span></th>
-                      <th id="Gid">ID:
-                        <span>
-                          <button class="btn btn-sm btn-secondary mr-1" id="ViewIDS" data-toggle="modal"
-                            data-target="#ModalViewID" data-type="passport">passpport</button>
-                          <button class="btn btn-sm btn-secondary mr-1" id="ViewIDS" data-toggle="modal"
-                            data-target="#ModalViewID" data-type="Voter ID">Voter ID</button>
-                        </span>
-                      </th>
-                    </tr>
-                    <tr>
-                      <th id="GguestDetails">Name: <span>Anastacia Grey</span></th>
-                      <th></th>
-                    </tr>
-                    <tr>
-                      <th id="Gaddress" colspan="2">Adress: <span>Lirio #3</span></th>
-                    </tr>
-                    <tr>
-                      <th id="Gcity">City: <span>Sto Dgo</span></th>
-                      <th id="Gstate">State: <span>Sto Dgo</span></th>
-                    </tr>
-                    <tr>
-                      <th id="Gcountry">Country: <span>Rep. Dom</span></th>
-                      <th id="Gzipcode">Zip Code: <span></span></th>
-                    </tr>
-                    <tr>
-                      <th id="Gnationality">Nationality: <span>Dominican</span></th>
-                      <th id="Gemail">Email: <span></span></th>
-                    </tr>
-                    <tr>
-                      <th id="Gphone">Phone: <span></span></th>
-                      <th>Mobile: <span></span> </th>
-                    </tr>
-                  </tbody>
-                </table>
-                <div class="row">
-                  <button class="btn btn-primary w-100" data-toggle="collapse" data-target="#moreInfoOfPerson"
-                    aria-expanded="true" aria-controls="collapseOne">More</button>
-                </div>
-                <div class="collapse" id="moreInfoOfPerson">
-                  <hr>
-                  <table class="verticalTable w-100" id="workInformation">
-                    <tbody>
-                      <tr>
-                        <th id="Worganization" colspan="2">Organization: <span></span></th>
-                      </tr>
-                      <tr>
-                        <th id="Waddress" colspan="2">Adress: <span>Lirio #3</span></th>
-                      </tr>
-                      <tr>
-                        <th id="Wcity">City: <span>Sto Dgo</span></th>
-                        <th id="Wstate">State: <span>Sto Dgo</span></th>
-                      </tr>
-                      <tr>
-                        <th id="Wcountry">Country: <span>Rep. Dom</span></th>
-                        <th id="Wzipcode">Zip Code: <span></span></th>
-                      </tr>
-                      <tr>
-                        <th id="Wphone">Phone: <span></span></th>
-                        <th id="Wmobile">Mobile: <span></span> </th>
-                      </tr>
-                    </tbody>
-                  </table>
-                  <hr>
-                  <table class="verticalTable w-100" id="guestPrecerences">
-                    <tbody>
-                      <tr>
-                        <th class="font-weight-bold">Guest Preferences:</th>
-                      </tr>
-                      <tr>
-                        <td id="GPpreferences"><span>Platano</span></td>
-                      </tr>
-                    </tbody>
-                  </table>
-                  <hr>
-                  <table class="verticalTable w-100" id="otherDetails">
-                    <tbody>
-                      <tr>
-                        <th class="font-weight-bold">Other Details:</th>
-                      </tr>
-                      <tr>
-                        <th id="OspouseName">Spouse Name: <span></span></td>
-                        <th id="ODOB">DOB: <span></span></th>
-                      </tr>
-                      <tr>
-                        <th id="Oaniversary">Aniversary: <span></span></th>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
 
-                <div class="group text-center">
-                  <button class="btn btn-danger btn-sm m-2 removeItem" data-message="guest"><i class="fas fa-times"></i>
-                    Remove guest</button>
-                  <div class="btn-group">
-                    <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#addOrEditGuestDetails"><i
-                        class="fas fa-plus"></i> Add</button>
-                    <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addOrEditGuestDetails"><i
-                        class="fas fa-edit"></i> Edit details</button>
-                  </div>
-                </div>
-              </section>
-              <hr>
-              <div class="table-responsive">
-                <div class="row my-1">
-                  <span><b>Room Sharers</b></span>
-                  <button class="btn btn-primary btn-sm ml-auto" data-toggle="modal" data-target="#managerSharers"><i
-                      class="fas fa-clipboard-list"></i> Manage
-                    Sharer(s)</button>
-                </div>
-                <table class="table table-striped text-center">
-                  <thead class="thead-dark">
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Date</th>
-                    <th>Nights</th>
-                    <th>Type</th>
-                    <th>Charge action</th>
-                  </thead>
-                  <tbody>
-                    <td>00001</td>
-                    <td>Anastacia Grey</td>
-                    <td>2020/07/30</td>
-                    <td>4</td>
-                    <td>Adult</td>
-                    <td>
-                      <button class="btn btn-outline-primary btn-sm"><i class="fas fa-pencil-alt"></i></button>
-                      <button class="btn btn-outline-danger btn-sm removeItem" data-message="guest"><i
-                          class="fas fa-trash"></i></button>
-                    </td>
-                  </tbody>
-                </table>
-              </div>
-              <div class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" value="off" id="sendMailConfirmation">
-                <label class="custom-control-label" for="sendMailConfirmation">Send confirmation Email </label>
-              </div>
-              <div class="row">
-                <div class="col-md-4 align-self-center">
-                  <b>Preferences</b>
-                </div>
-                <div class="col-md-8 text-right">
-                  <button class="btn btn-outline-success" id="btnOpenMessage" data-toggle="modal"
-                    data-target="#MessagesAndTasks">Mensajes
-                    <span class="badge badge-danger">2</span></button>
-                  <button class="btn btn-outline-info" id="btnOpenTask" data-toggle="modal"
-                    data-target="#MessagesAndTasks">Tasks <span class="badge badge-danger">4</span></button>
-                </div>
-                <div class="col-md-12 mt-3">
-                  <textarea name="" id="" class="form-control" rows="6"></textarea>
-                </div>
-                <div id="notes" class="notes col-md-12 mt-3">
-                  <div class="">
-                    <table class="table table-striped w-100">
-                      <thead>
-                        <th>NOTES</th>
-                        <th class="text-right">
-                          <button class="btn btn-primary btn-sm pull-right" data-toggle="modal"
-                            data-target="#addNewNote"><i class="fas fa-plus-circle"></i> Add Notes</button>
-                        </th>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td class="col-sm-9"><b>Fincance: </b>Cobrar restante.</td>
-                          <td class="col-sm-3 text-center">
-                            <button class="btn btn-outline-primary btn-sm"><i class="fas fa-pencil-alt"></i></button>
-                            <button class="btn btn-outline-danger btn-sm removeItem" data-message="note"><i
-                                class="fas fa-trash-alt"></i></button>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td class="col-sm-9"><b>Fincance: </b>Cobrar restante.</td>
-                          <td class="col-sm-3 text-center">
-                            <button class="btn btn-outline-primary btn-sm"><i class="fas fa-pencil-alt"></i></button>
-                            <button class="btn btn-outline-danger btn-sm removeItem" data-message="note"><i
-                                class="fas fa-trash-alt"></i></button>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                <div id="guestsPreferences" class="guestsPreferences col-md-12 mt-3">
-                  <div class="">
-                    <table class="table-striped w-100">
-                      <thead>
-                        <th class="py-2" colspan="2">Guests Prefereces <button class="btn" data-toggle="collapse"
-                            data-target="#tableGuestsPreferences"><i class="fas fa-eye"></i></button></th>
-                      </thead>
-                      <tbody id="tableGuestsPreferences" class="collapse">
-                        <tr>
-                          <td class="col-sm-4"><b>For: </b><span>Anastacia Grey</span></td>
-                          <td class="col-sm-8 text-secondary">Platano pollo, giusao</td>
-                        </tr>
-                        <tr>
-                          <td class="col-sm-4"><b>For: </b><span>Anastacia Grey</span></td>
-                          <td class="col-sm-8 text-secondary">Platano pollo, giusao</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-6 p-0">
-              <div class="row">
-                <!-- Column2 -->
-                <div id="content-StayDetails" class="col-md-6 p-3 px-4 content-StayDetails">
-                  <h5><b>Stay details</b> </h5>
-                  <div class="row mt-3">
-                    <div class="col-md-6 p-0 pr-1">
-                      <label for="checkIn">Check-in</label>
-                      <input type="date" id="checkIn" class="form-control px-2 inputCalendar">
-                    </div>
-                    <div class="col-md-6 p-0 pl-1">
-                      <label for="checkOut">Check-out</label>
-                      <input type="date" id="checkOut" class="form-control px-2 inputCalendar">
-                    </div>
-                  </div>
-
-                  <div class="row mt-3">
-                    <label for="info">Extra Bed</label>
-                    <div class="input-group">
-                      <select name="" id="extraBed" class="custom-select"></select>
-                      <div class="input-group-prepend">
-                        <button class="btn btn-primary rounded-right" data-toggle="modal"
-                          data-target="#modalExtraBed"><i class="fas fa-edit"></i></button>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row mt-3">
-                    <label for="purpose">Purpose</label>
-                    <input type="text" id="purpose" class="form-control" id="purpose">
-                  </div>
-                  <div class="row mt-3">
-                    <label for="sources">Sources</label>
-                    <select id="sources" class="custom-select "></select>
-                  </div>
-                  <div class="row mt-3">
-                    <label for="type">Type</label>
-                    <select id="type" class="custom-select "></select>
-                  </div>
-                  <div class="row mt-3">
-                    <label for="mktSmgt">Mkt Smgt</label>
-                    <select id="mktSmgt" class="custom-select "></select>
-                  </div>
-                  <div class="row mt-3">
-                    <label for="salesPerson">Sales person</label>
-                    <select id="salesPerson" class="custom-select "></select>
-                  </div>
-
-                  <div class="section-ArrivalOrDeparture">
-                    <div class="row mt-3">
-                      <div class="list-group flex-row text-center w-100" id="list-tab" role="tablist">
-                        <a class="list-group-item list-group-item-action active" id="list-arrival-list"
-                          data-toggle="list" href="#list-arrival" role="tab" aria-controls="arrival">Arrival</a>
-                        <a class="list-group-item list-group-item-action" id="list-departure-list" data-toggle="list"
-                          href="#list-departure" role="tab" aria-controls="departure">Departure</a>
-                      </div>
-                    </div>
-
-                    <div class="tab-content mt-3" id="nav-tabContent" style="background: none">
-                      <div class="tab-pane fade active show" id="list-arrival" role="tabpanel"
-                        aria-labelledby="list-arrival-list">
-                        <div id="contentsArrival">
-                          <div class="row mt-3">
-                            <label for="info">Select mode</label>
-                            <select id="mode" class="custom-select"></select>
-                          </div>
-                          <div class="row mt-3">
-                            <label for="arrivalFlight">Arrival/Flight #</label>
-                            <input type="text" class="form-control" id="arrivalFlight">
-                          </div>
-                          <div class="row mt-3">
-                            <label for="arrivalTime">Arrival Time</label>
-                            <input type="time" class="form-control" id="arrivalTime">
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="tab-pane fade" id="list-departure" role="tabpanel"
-                        aria-labelledby="list-departure-list">
-                        <div id="contentsDeparture">
-                          <div class="row mt-3">
-                            <label for="info">Select mode</label>
-                            <select id="departureMode" class="custom-select"></select>
-                          </div>
-                          <div class="row mt-3">
-                            <label for="departureFlight">Departure/Flight #</label>
-                            <input type="text" class="form-control" id="departureFlight">
-                          </div>
-                          <div class="row mt-3">
-                            <label for="departureTime">Departure Time</label>
-                            <input type="time" class="form-control" id="departureTime">
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="row mt-3">
-                    <div class="col p-1 align-self-center">
-                      <div class="custom-control custom-checkbox custom-control-inline">
-                        <input type="checkbox" class="custom-control-input" id="assignTask">
-                        <label class="custom-control-label" for="assignTask" data-toggle="collapse"
-                          data-target="#selectAssignTask">Assign Task</label>
-                      </div>
-                    </div>
-                    <div class="col p-1">
-                      <select id="selectAssignTask" class="custom-select collapse">
-                        <option value="" selected disabled>Select POS</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div class="row mt-4 p-1">
-                    <div class="custom-control custom-checkbox custom-control-inline">
-                      <input type="checkbox" class="custom-control-input" id="sendMail" />
-                      <label class="custom-control-label" for="sendMail">Send Mail</span>
-                    </div>
-                  </div>
-                </div>
-                <!-- Column3 -->
-                <div id="content-paymentDetails" class="col-md-6 pt-3 content-paymentDetails">
-                  <h5><b>Payment Details (USD $)</b></h5>
-                  <table class="table">
-                    <tbody>
-                      <tr>
-                        <td><b>Room tariff</b></td>
-                        <td id="roomTariff" class="text-right">$200.00</td>
-                      </tr>
-                      <tr>
-                        <td class="text-info cursor-pointer" data-toggle="modal" data-target="#modalRoomTaxes"><b>Room
-                            Taxes(es)</b></td>
-                        <td id="roomTaxes" class="text-right">$150.00</td>
-                      </tr>
-                      <tr>
-                        <td class="text-info cursor-pointer" data-toggle="modal" data-target="#modalAddOnsCharges">
-                          <b>Add-ons</b></td>
-                        <td id="addOns" class="text-right">$0.00</td>
-                      </tr>
-                      <tr>
-                        <td><b>Other Charger</b></td>
-                        <td id="otherCharger" class="text-right">$0.00</td>
-                      </tr>
-                      <tr>
-                        <td class="text-info cursor-pointer" data-toggle="modal" data-target="#modalOtherRoomTaxes">
-                          <b>Other Tax(es)</b></td>
-                        <td id="otherTax" class="text-right">$0.00</td>
-                      </tr>
-                      <tr class="bg-info text-white">
-                        <td data-toggle="modal" data-target="#modalTotal" class="cursor-pointer"><b>Total</b></td>
-                        <td id="total" class="text-right">$<b>2,150.00</b></td>
-                      </tr>
-                      <tr>
-                        <td><b>Amount paid</b></td>
-                        <td id="amountPaid" class="text-right">$0.00</td>
-                      </tr>
-                      <tr>
-                        <td class="text-info cursor-pointer" data-toggle="modal" data-target="#modalDiscountDetails">
-                          <b>Discount</b></td>
-                        <td id="discount" class="text-right">$0.00</td>
-                      </tr>
-                      <tr>
-                        <td class="text-info cursor-pointer" data-toggle="modal" data-target="#modalOtherDiscount">
-                          <b>Other Discount</b></td>
-                        <td id="otherDiscount" class="text-right">$0.00</td>
-                      </tr>
-                      <tr class="bg-secondary text-white">
-                        <td><b>Balance</b></td>
-                        <td id="balance" class="text-right"><b>$2,150.00</b></td>
-                      </tr>
-                    </tbody>
-                  </table>
-                  <hr>
-                  <div class="container-fluid p-0">
-                    <h5><b>Credit Card Details</b></h5>
-                    <div class="row mt-3">
-                      <label for="carNumber">Card Number</label>
-                      <input type="text" class="form-control" id="cardNumber" placeholder="#### #### #### ####">
-                    </div>
-                    <div class="row mt-3">
-                      <label for="cardType">Card type</label>
-                      <select class="custom-select" name="" id=""></select>
-                    </div>
-                    <div class="row mt-3">
-                      <label for="expire" class="d-block w-100">Expire</label>
-                      <div class="col"><input type="text" class="form-control" placeholder="MM"></div><b
-                        style="align-self: center;">/</b>
-                      <div class="col"><input type="text" class="form-control" placeholder="YYYY"></div><b
-                        style="align-self: center;">/</b>
-                      <div class="col"><input type="text" class="form-control" placeholder="CVC"></div><b
-                        style="align-self: center;"></b>
-                    </div>
-                    <div class="row mt-3">
-                      <button class="btn btn-outline-primary w-100" data-toggle="modal"
-                        data-target="#ModalAddCreditCard"><i class="fas fa-credit-card"></i> Add Credit
-                        Card</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <!--Table Rates/Packages-->
-              <div id="ratesPackages" class="col-md-12 p-0 mt-4">
-                <table id="tableDiscount" class="table">
-                  <thead class="text-center text-white" style="background: #138c9f;">
-                    <tr>
-                      <th colspan=" 2">Rates/Packes</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td class="pl-0">
-                        <button class="btn btn-success btn-sm w-100" data-toggle="modal"
-                          data-target="#modalSpecialDiscount"><i class="fas fa-percentage"></i> Apply Special
-                          Discount</button>
-                      </td>
-                      <td class="pr-0">
-                        <button class="btn btn-info btn-sm w-100" data-toggle="modal" data-target="#modalPromoCode"><i
-                            class="fas fa-barcode"></i> Promo Code</button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td id="specialDiscount"></td>
-                      <td id="promoCode"></td>
-                    </tr>
-                  </tbody>
-                </table>
-
-                <table id="tableRatesPackes" class="table text-center tableRatesPackes">
-                  <thead class="bg-info">
-                    <tr>
-                      <th>Rate Type</th>
-                      <th>Date</th>
-                      <th>Amount</th>
-                      <th>Nights</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>
-                        <select class="custom-select custom-select-user" id="changeRateType">
-                          <option value="">Seasonal Rate</option>
-                        </select>
-                      </td>
-                      <td>
-                        <span>03 Aug - </span>
-                        <button class="btn">06 Aug</button>
-                      </td>
-                      <td>$ 200.00</td>
-                      <td>3</td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <button class="btn btn-outline-primary w-100" data-toggle="modal"
-                          data-target="#modalInclusionsAddons"><i class="fas fa-puzzle-piece"></i>
-                          Inclusions/Add-ons</button>
-                      </td>
-                      <td id="inclusions-Addons" class="text-dark inclusions-Addons" colspan="3"> <i>Airport</i>
-                        <i>Pickup</i> <i>Half Board: Breakfast</i> <i>Dinner</i> </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <!--Table Split-->
-              <div class="table-responsive mt-4">
-                <div class="row py-2 m-0 px-2" style="background: #272b2f;">
-                  <b class="align-self-center text-white">Split reservation</b>
-                  <span class="ml-auto">
-                    <button class="btn btn-success btn-sm margin" data-toggle="modal"
-                      data-target="#modalAddSplitReservation">Add Split Reservation</button>
-                    <button class="btn btn-info btn-sm margin-left-auto" data-toggle="modal"
-                      data-target="#modalExtendSplitReservation">Extend Split</button>
-                  </span>
-                </div>
-                <table id="tableSplitReservation" class="table text-center">
-                  <thead class="thead-dark">
-                    <tr>
-                      <th>Room Type</th>
-                      <th>Date</th>
-                      <th>Room</th>
-                      <th>Nights</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>Standar</td>
-                      <td>2020/07/03 - 2020/07/04</td>
-                      <td>
-                        <select class="custom-select custom-select-user" id="changeRroom">
-                          <option value="">STD-12</option>
-                        </select>
-                      </td>
-                      <td>2</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-          <div class='row tab-pane-footer'>
-            <div class='col-md-12'>
-              <button class='btn btn-light mx-1'>Cancel</button>
-              <button id='paidBill' class='btn btn-light mx-1'>Payment</button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <!-- aqui va anastacia garcia -->
+   
+   
       <div class="tab-pane" id="groupReservation" role="tabpanel" aria-labelledby="groupReservation-tab">
         <div id="createGroupReservation" class='col-md-12 p-0'>
           <div class='row p-3' id='headerClientDetails'>
@@ -4073,10 +3696,10 @@
                           </span>
                         </th>
                       </tr>
-                      <tr>
+                    <!--   <tr>
                         <th id='GguestDetails'>Name: <span>Anastacia Grey</span></th>
                         <th></th>
-                      </tr>
+                      </tr> -->
                       <tr>
                         <th id='Gaddress' colspan='2'>Adress: <span>Lirio #3</span></th>
                       </tr>
@@ -5286,30 +4909,47 @@
               <div class="col-md-1">
                 <label for="info">Adult</label>
                 <select name="adult" id="adult" class="custom-select">
-                  <option value=""></option>
+                     <?php for ($i = 1; $i <= 24; $i++) : ?>
+                      <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
+                   <?php endfor; ?>
                 </select>
               </div>
               <div class="col-md-1">
                 <label for="info">Child</label>
-                <select name="child" id="child" class="custom-select"></select>
+                <select name="child" id="child" class="custom-select">
+                   <option>0</option>
+                   <?php for ($i = 1; $i <= 24; $i++) : ?>
+                      <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
+                   <?php endfor; ?>
+                </select>
               </div>
               <div class="col-md-5">
                 <label for="info">Rate Type</label>
                 <select name="rateType" id="rateType" class="custom-select">
-                  <option value="">...</option>
+                  <option value="">Select a Room</option>
+                                    @foreach ($roomTypeId as $country)
+                                        <option value="{{$country->id}}">{{$country->name}}</option>
+                                    @endforeach
                 </select>
               </div>
               <div class="col-md-1">
                 <label for="info">Rooms</label>
                 <select name="CRooms" id="CRooms" class="custom-select">
-                  <option value="">1</option>
+                   <?php for ($i = 1; $i <= 24; $i++) : ?>
+                      <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
+                   <?php endfor; ?>
                 </select>
               </div>
             </div>
             <div class="row mb-2">
               <div class="col-md-2">
                 <label for="info">Title</label>
-                <select name="" id="" class="custom-select"></select>
+                <select name="" id="" class="custom-select">
+                  <option>Mr.</option>
+                  <option>Dr.</option>
+                  <option>Mrs.</option>
+                  <option>Ms.</option>
+                </select>
               </div>
               <div class="col-md-3">
                 <label for="info">First name</label>
@@ -5381,7 +5021,10 @@
             </div>
             <hr>
             <div class="row p-3 bg-lightblue text-success">
-              <span style="font-size: 20px;">Price:$ <b>100</b> | <b>($ 100)</b></span>
+              <span style="font-size: 20px;">Price:$ <b>   
+                @foreach ($roomTypeId as $country)
+                                        {{$country->base_price}}
+                @endforeach</b> | <b>($ 100)</b></span>
             </div>
           </form>
           <!--END MODAL BODY-->

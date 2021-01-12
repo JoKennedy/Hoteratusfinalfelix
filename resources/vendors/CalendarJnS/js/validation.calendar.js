@@ -133,14 +133,14 @@ $(document).ready(function () {
         $("#modalConverterCurrency #amount").val(amount);
         $("#modalConverterCurrency").modal();
     });
-    $("body").on("click", "#modalConverterCurrency #btnConverterCurrency", function () {
-        new PayBill().convertCurrency()
-    });
     $("body").on("click", "#calendar #tab-content #paidBill,#groupPaidBill", function () {
         new PayBill().ViewPayBill();
     });
     $("body").on("click", "#calendar #tab-content #backToReserv", function () {
         new PayBill().BackToReserv();
+    });
+    $("body").on("click", "#modalConverterCurrency #btnConverterCurrency", function () {
+        new PayBill().convertCurrency()
     });
     $("body").on("click", `#calendar #tab-content #tableFolios tbody tr`, function () {
         let id = $(this).attr("data-id");
@@ -438,7 +438,7 @@ class ManagerIDS {
         await GetInformation(data);
         $("#ModalViewID #saveIDS").attr("disabled", "");
         $("#ModalViewID #saveIDS").attr("data-action", "set");
-        $("#ModalViewID").modal("hide");
+        $("#ModalViewID").modal("close");
     }
     async deleteID(ID) {
         let data =
@@ -1728,6 +1728,7 @@ class PayBill {
         let amount = $("#modalConverterCurrency #amount").val();
         let currency = $("#modalConverterCurrency #currency").val();
         let convertTo = $("#modalConverterCurrency #convertTo").val();
+
         let data = {
             "TO": "PayBill",
             "FOR": "currency",
@@ -1744,7 +1745,7 @@ class PayBill {
 
         $("#modalConverterCurrency #convertedCurrency").text("$ " + total);
         if ($("#modalConverterCurrency #convertApplyToPaid").val() == "on") {
-            $(`#tab-content-restaurant #${clientIdActive} .payment-details #amount`).val(total);
+            $("#tab-content #paybill #amount").val(total);
         }
     }
     async AccountStatement() {
@@ -3053,17 +3054,15 @@ function validationFields(PARENT) {
 }
 function GetInformation(datos) {
     datos["_token"] = csrf_token
-    let route = window.location.pathname;
-    route = route.endsWith("/")? "getinformation" : route+"/getinformation";
-    console.log(route)
     $(".loading-status").removeClass("hide");
     let result =
         $.ajax({
             type: 'post',
-            url: route,
+            url: '/calendar/getinformation/',
             dataType: "json",
             data: datos,
-            
+
+
             success: function (res) {
                 $(".loading-status").addClass("hide");
                 console.log(res)
@@ -3079,7 +3078,7 @@ function GetInformation(datos) {
                     <strong>An error has ocurred!</strong> Please try again, in a moment.
                 </div>
             </div>`;
-                $("body #content-alert").append(error);
+                $("body").append(error);
                 return result = "";
             }
         });

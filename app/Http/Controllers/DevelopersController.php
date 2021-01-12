@@ -17,7 +17,7 @@ class DevelopersController extends Controller
         if (!session()->get('company_id')) {
             session()->put('company_id', 1);
         }
-        
+
         if($request->ajax()){
 
             $tasks = Tasks::where('company_id', '=', session()->get('company_id'))->orderBy('created_at',  'DESC');
@@ -35,7 +35,7 @@ class DevelopersController extends Controller
 
     }
 
-    public function show($id){	
+    public function show($id){
 
         $task = Tasks::where('id', '=', $id)->first();
         $categories = DB::table('tasks_categories')->where('company_id', '=', session()->get('company_id'));
@@ -62,7 +62,7 @@ class DevelopersController extends Controller
             return redirect(route('developers.index'))->with('message_warning', 'An error has occurred');
         }
     }
-    
+
     public function editTask($id){
 
         $task = Tasks::where('id', '=', $id)->first();
@@ -73,7 +73,7 @@ class DevelopersController extends Controller
     }
 
     public function updateTask(Request $request, Tasks $task){
-        
+
         $developer = $task->get_developer($request->task['developer_id'], false);
         $status = $task->get_status($request->task['status_id']);
         $this->sendEmailNotification($request->task, $developer, $status, $task->user_id);
@@ -106,8 +106,8 @@ class DevelopersController extends Controller
 
     public function storeCategory(Request $request){
 
-        $category = TasksCategories::create($request->category);
-        $category->company_id = session()->get('company_id');
+        $category = TasksCategories::create( ["company_id" =>session()->get('company_id') ] + $request->category);
+
         if ($category->save()) {
             return redirect(route('developers.index'))->with('message_success', 'Category created successfully');
         }else{
@@ -131,7 +131,7 @@ class DevelopersController extends Controller
         }
     }
 
-    
+
     public function createDeveloper(){
 
         return view('pages.developers.create-developer');

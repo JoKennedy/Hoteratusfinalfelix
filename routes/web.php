@@ -2,6 +2,7 @@
 use App\Http\Controllers\LanguageController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -19,9 +20,6 @@ use Illuminate\Support\Facades\Route;
 // Paginas Publicas
 Route::get('/', 'HomeController@index');
 Route::get('/home', 'HomeController@index');
-Route::get('/about','HomeController@about');
-Route::get('/terms-of-service','HomeController@terms_of_service');
-Route::get('/privacy-policy','HomeController@privacy_policy');
 Route::get('/user-lock-screen', 'HomeController@userLock')->name('user.lock');
 
 
@@ -39,7 +37,22 @@ Route::get('/social/handle/{provider}', [
 
 //RUTAS PROTEGIDAS
 // locale route
-Route::get('lang/{locale}', [LanguageController::class, 'swap'])->middleware('auth');;
+Route::get('lang/{locale}', [LanguageController::class, 'swap'])->middleware('auth');
+
+//reservation
+Route::get('/reservation', 'ReservationController@index')->name('reservation.index')->middleware('auth');
+Route::get('/reservation/create', 'ReservationController@create')->name('reservation.create')->middleware('auth');
+Route::post('/reservation', 'ReservationController@store')->name('reservation.store')->middleware('auth');
+Route::get('/reservation/mail', 'ReservationController@getMail');
+// Route::get('/reservation/{reservation}', 'ReservationController@show')->name('reservation.show')->middleware('auth');
+
+
+
+//drag and drop 
+
+Route::get('/reservationhotel', 'ReservationHotel@index');
+Route::get('/tasks/{id}', 'ReservationHotel@updateTasksStatus');
+Route::get('/reservationhotel/updateAll', 'ReservationHotel@updateTaskOrder');
 
 
 // Dashboard
@@ -172,12 +185,10 @@ Route::resource('long-stay-discount', 'DiscountLongStayController')->middleware(
 //Calendar
 Route::get('calendar', 'CalendarController@index')->name("calendar.index")->middleware('auth');
 Route::post('calendar/getinformation', 'CalendarController@getInformation')->name("calendar.index")->middleware('auth');
-Route::post('calendar/housekeeping/getinformation', 'CalendarController@getInformation')->name("calendar.index")->middleware('auth');
 Route::get('calendar/housekeeping', 'CalendarController@housekeeping')->name('calendar.housekeeping')->middleware('auth');
 
-//Restaurant 
+//Restaurant
 Route::get('restaurant','RestaurantController@index')->middleware('auth');
-Route::post('restaurant/getinformation','RestaurantController@getInformation')->middleware('auth');
 //Tasks
 Route::get('/developers/task', 'DevelopersController@index')->name('developers.index')->middleware('auth');
 Route::get('/developers/create-task', 'DevelopersController@create')->name('developers.create-task')->middleware('auth');
@@ -194,6 +205,8 @@ Route::post('developers/create-subcategory', 'DevelopersController@storeSubcateg
 
 Route::get('/developers/create-developer', 'DevelopersController@createDeveloper')->name('developers.create-developer')->middleware('auth');
 Route::post('developers/create-developer', 'DevelopersController@storeDeveloper')->name('developers.store-developer')->middleware('auth');
+
+
 
 ///long-stay-discount
 

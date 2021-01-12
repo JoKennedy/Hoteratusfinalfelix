@@ -54,11 +54,6 @@ label{
   color: #9e9e9e;
   user-select: none;
 }
-.btn-group-space{
-  button{
-    margin-top: 5px;
-  }
-}
 .custom-select-user{
   width: auto;
   font-weight: 600;
@@ -75,32 +70,6 @@ label{
   color: $darkWhite;
   padding-top: 20px;
   padding-bottom: 10px;
-}
-/*.alert-heading{
-  transition: transform .3s ease-out,-webkit-transform .3s ease-out;
-  animation: alert 1s infinite;
-
-}
-@keyframes alert{
-  from{transform: scale(1.02);}
-}*/
-.font-weight-300{
-  font-weight: 300;
-}
-.font-weight-400{
-  font-weight: 400;
-}
-.font-weight-500{
-  font-weight: 500;;
-}
-.font-weight-600{
-  font-weight: 600;
-}
-.font-weight-700{
-  font-weight: 700;
-}
-.font-weigth-800{
-  font-weight: 800;
 }
 .bg-f2{
   background: $bg-f2;
@@ -142,14 +111,6 @@ table{
 .dataTables_wrapper{
   padding-top: 1rem;
   padding-bottom: 1rem;
-  .row:nth-child(1){
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-  .row:nth-child(3){
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
 }
 .verticalTable{
   width: 100% !important;
@@ -175,19 +136,10 @@ table{
     text-align: right;
   }
 }
-@media only screen and (min-width:576px) {
+@media (min-width:576px) {
   .modal .modal-md{
    max-width:700px !important;
    margin:1.75rem auto;
-  }
-}
-@media only screen and (max-width:600px){
-  .table-responsive-phone{
-    width: 100%;
-    overflow-x: auto;
-    .dropdown.show{
-      position: absolute !important;
-    }
   }
 }
 .loading-status{
@@ -222,18 +174,6 @@ table{
       color: #e8e8e8;
     }
   }
-}
-#content-alert{
-  position: fixed;
-  width: 25%;
-  z-index: 1060;
-  bottom: 0;
-  display: grid;
-  align-items: end;
-  align-self: end;
-  align-content: end;
-  
- 
 }
 
   /*===============================
@@ -827,51 +767,8 @@ header{
     }
   }
 }
-@media only screen and(max-width:600px){
-  #restaurant{
-    #myTabRestaurant{
-      margin-top: 1rem;
-    }
-    .tab-content{
-      .list-products{
-        display: grid;
-        grid-template-columns: repeat(1, 1fr) !important;
-      }
-    }
-  }
-}
 #restaurant{
-    table{
-      tbody{
-        &:empty{
-          text-align: right;
-          padding: 10px;
-          &::after{
-            content: "No data available";
-          }
-        }
-      }
-    }
   .tab-content{
-    @media only screen and(max-width:600px){
-      .list-products{
-        display: grid;
-        grid-template-columns: repeat(1, 1fr);
-        grid-gap: 10px;
-        padding: 1rem;
-      }
-    }
-    .filter{
-      #addNewProduct{
-        .dropdown-menu{
-          .list-group{
-            li{
-              display: flex;
-            }
-          }
-        }
-      }
-    }
     .list-products{
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -887,15 +784,13 @@ header{
         overflow: hidden;
         cursor: pointer;
         min-height: 60px;
-        align-self: center;
-        transition: ease-in-out 0.3s;
         &:hover{
+          top: -5px;
           box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.19) !important;
           overflow: initial;
-          transform: translateY(-5px);
         }
         .price-product{
-          transform: translateX(200%);
+          transform: translateX(150%);
           position: absolute;
           transition: 0.5s;
         }
@@ -912,18 +807,6 @@ header{
           box-shadow: 0px 0px 5px 0.1rem rgba(6, 6, 6, 0.24);
           right: -5px;
           transform: translateX(0%);
-        }
-      }
-    }
-    #tableTotalAmount{
-      #totalPrice{
-        input{
-          transition: 0.4s;
-          &:focus{
-            font-size: 25px;
-            color: #28a745;
-            font-weight: 500;
-          }
         }
       }
     }

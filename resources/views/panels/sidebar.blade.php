@@ -42,9 +42,7 @@
         $level3 =0;
         $level4 =0;
 
-        if(!session()->get('menu')){
-            session()->put('menu', $user->user_menu());
-        }
+       
 
         $menus = session()->get('menu');
 
@@ -70,7 +68,7 @@
 
             @endphp
             <li class="navigation-header">
-            <a class="navigation-header-text">{{ session()->get('hotel_name') }}</a>
+            <a class="navigation-header-text" href="{{ session()->get('hotel_name') }}"></a>
             <i class="navigation-header-icon material-icons">{{$menu->icon }}</i>
             </li>
         @elseif($menu->order3 == 0)
@@ -158,6 +156,7 @@
             }
       @endphp
     @endif
+    {!! $MyNavBar->asUl() !!}
     <li class="navigation-header">
         <a class="navigation-header-text"></a>
         <i class="navigation-header-icon material-icons"></i>

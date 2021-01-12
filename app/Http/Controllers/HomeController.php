@@ -31,15 +31,6 @@ class HomeController extends Controller
 
         return view('public.home');
     }
-    public function about(){
-        return view('public.about');
-    }
-    public function terms_of_service(){
-        return view('public.termsOfService');
-    }
-    public function privacy_policy(){
-        return view('public.privacyPolicy');
-    }
     public function userLock(Request $request){
 
 

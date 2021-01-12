@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class AccountCode extends Model
 {
-      protected $fillable = [ 'name', 'code', 'hotel_id', 'property_departments_id' ];
+      protected $fillable = [ 'name', 'code', 'hotel_id', 'property_department_id' ];
 
       public function roomtaxes(){
           return $this->hasMany('App\RoomTax');

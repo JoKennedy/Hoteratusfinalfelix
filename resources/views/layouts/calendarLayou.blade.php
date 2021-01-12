@@ -22,7 +22,7 @@ $configData = Helper::applClasses();
     <link rel="shortcut icon" type="image/x-icon" href="{{asset('images/favicon/logo2.png')}}">
     <link href="{{asset('vendors/CalendarJnS/datatables/dataTables.bootstrap4.min.css')}}" rel="stylesheet">
     <!-- Include core + vendor Styles -->
- 
+    
 </head>
 <body>
     <header class="page-topbar" id="header">
@@ -31,9 +31,10 @@ $configData = Helper::applClasses();
                 <li>
                   <h2 class="logo-wrapper">
                     <a class="brand-logo darken-1" href="{{asset('/')}}">
-                      @if(!empty ($configData['templateTitle']))
                       <img src="{{asset($configData['smallScreenLogo'])}}" alt="logo">
                       <span class="logo-text hide-on-med-and-down" >
+                        @if(!empty ($configData['templateTitle']))
+                        {{$configData['templateTitle']}}
                         @else
                         {{env('APP_NAME')}}
                         @endif
@@ -105,11 +106,9 @@ $configData = Helper::applClasses();
           </div>
       </div>
   </div>
-  <div id="content-alert"></div>
 </body>
 
 {{-- scripts --}}
-
 <script>
   var csrf_token = "{{ csrf_token() }}";
 </script>
@@ -120,18 +119,20 @@ $configData = Helper::applClasses();
 <script src="{{asset('vendors/CalendarJnS/lib/jquery.poink.js')}}"></script>
 <script src="{{asset('vendors/CalendarJnS/js/validation.calendar.js')}}"></script>
 <script src="{{asset('vendors/CalendarJnS/js/app-calendar.js')}}"></script>
-<script src="{{asset('vendors/CalendarJnS/js/miniCalendar.js')}}"></script>
-<script src="{{asset('vendors/CalendarJns/js/scripts.js')}}"></script>
+
 
 <script src="{{asset('vendors/CalendarJnS/datatables/jquery.dataTables.min.js')}}"></script>
 <script src="{{asset('vendors/CalendarJnS/datatables/dataTables.bootstrap4.min.js')}}"></script>
 <script src="{{asset('vendors/CalendarJnS/js/datatables-demo.js')}}"></script>
 <script src="{{asset('vendors/CalendarJnS/js/draggable.js')}}"></script>
-<script src="{{asset('vendors/lib/jquery/jquery-migrate.min.js')}}"></script>
+<script src="{{asset('vendors/CalendarJnS/js/miniCalendar.js')}}"></script>
+
 <script>
+  
     $(document).ready(function(){
         let path = window.location.pathname
         let item = $(`header .nav-item a[href$='${path}']`).closest("li").addClass("active");
     });
 </script> 
+
 </html>

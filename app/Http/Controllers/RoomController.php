@@ -93,7 +93,7 @@ class RoomController extends Controller
     {
 
         $hotel_id = $request->session()->get('hotel_id');
-        //dd($request->all());
+        // dd($request->all());
         $request->validate([
             'name' => ['required', Rule::unique('rooms')->where(function ($query) use ($request, $hotel_id) {
                 return $query->where('name', $request->name)->where('hotel_id', $hotel_id);
